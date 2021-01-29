@@ -14,11 +14,13 @@ type fila []casilla
 type arena []fila
 
 var (
-	fruta   = []string{"•"}
-	jugador = []string{"☺"}
+	fruta   = []string{"☼"}
+	jugador = []string{"☻"}
 )
 
 var a arena
+
+var points, tiempo int
 
 func main() {
 
@@ -46,17 +48,23 @@ func main() {
 			select {
 			case <-c:
 
+				a = generarArena(nColumnas, nFilas)
+
 				x, y = ubicacionFruta(nColumnas, nFilas)
 
 				generarFruta(a, nColumnas, x, y)
 
+				points++
+
 			default:
 
 			}
-
 			clearScreen()
 
 			mostrarArena(a)
+
+			tiempo++
+
 		}
 
 	}
@@ -81,6 +89,17 @@ func generarArena(nColumnas, nFilas int) (a arena) {
 
 func mostrarArena(a arena) {
 
+	fmt.Println()
+
+	puntaje := fmt.Sprintf("Points: %d", points)
+	t := fmt.Sprintf("Time: %d", tiempo)
+
+	fmt.Println(puntaje)
+	fmt.Println(t)
+
+	fmt.Println()
+	fmt.Println()
+
 	for i := range a {
 		fmt.Println(a[i])
 	}
@@ -103,7 +122,7 @@ func generarFruta(a arena, nColumnas, x, y int) {
 
 	n[x] = fruta
 
-	a[1] = n
+	a[y] = n
 
 }
 
