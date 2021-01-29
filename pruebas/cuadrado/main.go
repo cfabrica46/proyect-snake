@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-type casilla []int
+type casilla []string
 type fila []casilla
 type arena []fila
 
