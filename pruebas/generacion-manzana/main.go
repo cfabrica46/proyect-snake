@@ -18,6 +18,8 @@ var (
 	jugador = []string{"☺"}
 )
 
+var a arena
+
 func main() {
 
 	var nColumnas, nFilas int
@@ -25,19 +27,34 @@ func main() {
 	nColumnas = 10
 	nFilas = 10
 
-	a := generarArena(nColumnas, nFilas)
+	a = generarArena(nColumnas, nFilas)
 
 	tick := time.Tick(time.Second * 1)
+
+	x, y := ubicacionFruta(nColumnas, nFilas)
+
+	generarFruta(a, nColumnas, x, y)
+
+	c := make(chan bool)
+
+	go comer(c)
 
 	for {
 		select {
 		case <-tick:
 
+			select {
+			case <-c:
+
+				x, y = ubicacionFruta(nColumnas, nFilas)
+
+				generarFruta(a, nColumnas, x, y)
+
+			default:
+
+			}
+
 			clearScreen()
-
-			x, y := ubicacionFruta(nColumnas, nFilas)
-
-			generarFruta(a, nColumnas, x, y)
 
 			mostrarArena(a)
 		}
@@ -108,4 +125,12 @@ func clearScreen() {
 		cmd.Run()
 	}
 
+}
+
+func comer(c chan bool) {
+	for {
+		fmt.Scanln()
+
+		c <- true
+	}
 }
