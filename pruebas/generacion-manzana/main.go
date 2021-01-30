@@ -14,8 +14,8 @@ type fila []casilla
 type arena []fila
 
 var (
-	fruta   = []string{"☼"}
-	jugador = []string{"☻"}
+	fruta  = []string{"☼"}
+	player = []string{"☻"}
 )
 
 var a arena
@@ -35,7 +35,7 @@ func main() {
 
 	x, y := ubicacionFruta(nColumnas, nFilas)
 
-	generarFruta(a, nColumnas, x, y)
+	generarFruta(nColumnas, x, y)
 
 	c := make(chan bool)
 
@@ -52,7 +52,7 @@ func main() {
 
 				x, y = ubicacionFruta(nColumnas, nFilas)
 
-				generarFruta(a, nColumnas, x, y)
+				generarFruta(nColumnas, x, y)
 
 				points++
 
@@ -61,7 +61,7 @@ func main() {
 			}
 			clearScreen()
 
-			mostrarArena(a)
+			mostrarArena()
 
 			tiempo++
 
@@ -87,7 +87,7 @@ func generarArena(nColumnas, nFilas int) (a arena) {
 	return
 }
 
-func mostrarArena(a arena) {
+func mostrarArena() {
 
 	fmt.Println()
 
@@ -116,7 +116,7 @@ func ubicacionFruta(nColumnas, nFilas int) (x, y int) {
 	return
 }
 
-func generarFruta(a arena, nColumnas, x, y int) {
+func generarFruta(nColumnas, x, y int) {
 
 	n := make(fila, nColumnas)
 
