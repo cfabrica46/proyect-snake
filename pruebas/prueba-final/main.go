@@ -134,7 +134,10 @@ func mostrarArena() {
 	fmt.Println()
 
 	for i := range a {
-		fmt.Println(a[i])
+		for index := range a[i] {
+			fmt.Printf("%v\t", a[i][index])
+		}
+		fmt.Println()
 	}
 }
 
