@@ -26,7 +26,7 @@ const (
 
 var (
 	fruit  = []string{"☼"}
-	player = []string{"☻"}
+	player = []string{"☺"}
 )
 
 var (
@@ -136,9 +136,9 @@ func mostrarArena() {
 	for i := range a {
 		for index := range a[i] {
 			if a[i][index] == nil {
-				fmt.Print("■\t")
+				fmt.Print("■  ")
 			} else {
-				fmt.Printf("%v\t", a[i][index])
+				fmt.Printf("%v  ", a[i][index][0])
 			}
 		}
 		fmt.Println()
