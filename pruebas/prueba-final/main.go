@@ -135,7 +135,11 @@ func mostrarArena() {
 
 	for i := range a {
 		for index := range a[i] {
-			fmt.Printf("%v\t", a[i][index])
+			if a[i][index] == nil {
+				fmt.Print("■\t")
+			} else {
+				fmt.Printf("%v\t", a[i][index])
+			}
 		}
 		fmt.Println()
 	}
@@ -283,7 +287,7 @@ func reubication(n fila, nColumnas, nFilas int, xPlayer, yPlayer, xFruit, yFruit
 
 	if n[*xPlayer] != nil {
 
-		n[*xPlayer] = casilla{fruit[0], player[0]}
+		n[*xPlayer] = casilla{player[0]}
 
 		points++
 
