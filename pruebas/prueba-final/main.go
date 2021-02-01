@@ -35,11 +35,9 @@ var (
 
 var a arena
 
-var points, tiempo int
-
 func main() {
 
-	var nColumnas, nFilas int
+	var nColumnas, nFilas, points, tiempo int
 
 	d := right
 
@@ -56,7 +54,7 @@ func main() {
 
 	clearScreen()
 
-	mostrarArena()
+	mostrarArena(tiempo, points)
 
 	tick := time.Tick(time.Second * 1)
 
@@ -81,7 +79,7 @@ func main() {
 
 			generarFruit(nColumnas, xFruit, yFruit)
 
-			err := playerMove(d, nColumnas, nFilas, &xPlayer, &yPlayer, &xFruit, &yFruit)
+			err := playerMove(d, nColumnas, nFilas, points, &xPlayer, &yPlayer, &xFruit, &yFruit)
 
 			if err != nil {
 				if err == errGameOver {
@@ -94,7 +92,7 @@ func main() {
 
 			clearScreen()
 
-			mostrarArena()
+			mostrarArena(tiempo, points)
 
 			tiempo++
 
@@ -120,7 +118,7 @@ func generarArena(nColumnas, nFilas int) (a arena) {
 	return
 }
 
-func mostrarArena() {
+func mostrarArena(tiempo, points int) {
 
 	fmt.Println()
 
@@ -200,7 +198,7 @@ func generarPlayer(nColumnas int) (x, y int) {
 	return
 }
 
-func playerMove(d direction, nColumnas, nFilas int, xPlayer, yPlayer, xFruit, yFruit *int) (err error) {
+func playerMove(d direction, nColumnas, nFilas, points int, xPlayer, yPlayer, xFruit, yFruit *int) (err error) {
 
 	switch d {
 	case up:
@@ -217,7 +215,7 @@ func playerMove(d direction, nColumnas, nFilas int, xPlayer, yPlayer, xFruit, yF
 
 		checkIFExistFruit(a[*yPlayer], n)
 
-		reubication(n, nColumnas, nFilas, xPlayer, yPlayer, xFruit, yFruit)
+		reubication(n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
 
 	case right:
 
@@ -233,7 +231,7 @@ func playerMove(d direction, nColumnas, nFilas int, xPlayer, yPlayer, xFruit, yF
 
 		checkIFExistFruit(a[*yPlayer], n)
 
-		reubication(n, nColumnas, nFilas, xPlayer, yPlayer, xFruit, yFruit)
+		reubication(n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
 
 	case left:
 
@@ -249,7 +247,7 @@ func playerMove(d direction, nColumnas, nFilas int, xPlayer, yPlayer, xFruit, yF
 
 		checkIFExistFruit(a[*yPlayer], n)
 
-		reubication(n, nColumnas, nFilas, xPlayer, yPlayer, xFruit, yFruit)
+		reubication(n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
 
 	case down:
 
@@ -265,7 +263,7 @@ func playerMove(d direction, nColumnas, nFilas int, xPlayer, yPlayer, xFruit, yF
 
 		checkIFExistFruit(a[*yPlayer], n)
 
-		reubication(n, nColumnas, nFilas, xPlayer, yPlayer, xFruit, yFruit)
+		reubication(n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
 
 	}
 
@@ -283,7 +281,7 @@ func checkIFExistFruit(old, new fila) {
 
 }
 
-func reubication(n fila, nColumnas, nFilas int, xPlayer, yPlayer, xFruit, yFruit *int) {
+func reubication(n fila, nColumnas, nFilas, points int, xPlayer, yPlayer, xFruit, yFruit *int) {
 
 	if n[*xPlayer] != nil {
 
