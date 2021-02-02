@@ -3,32 +3,56 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	"time"
 
-	"github.com/cfabrica46/proyecto-pokemon/pokedatabases"
+	"github.com/cfabrica46/snake/db"
 )
 
-func ingresar(databases *sql.DB, user pokedatabases.User) (err error) {
+func ingresar(databases *sql.DB, user db.User) (err error) {
 
 	var eleccionMenu int
 	var salir bool
+
+	clearScreen()
 
 	fmt.Printf("Bienvenido %v tu ID es: %v\n", user.Username, user.ID)
 
 	for salir == false {
 		fmt.Println("¿Qué Desea Hacer?")
 		fmt.Println("1.	Jugar")
+		fmt.Println("2.	Mostrar Tus Puntos")
 		fmt.Println("0.	Salir")
 
 		fmt.Scan(&eleccionMenu)
 
 		switch eleccionMenu {
 		case 1:
-			err := play()
+			clearScreen()
+			err := play(databases, user)
 
 			if err != nil {
 				fmt.Println(err.Error())
 			}
+
+			fmt.Println("GAME OVER!!!")
+
+		case 2:
+			clearScreen()
+			scores, err := db.GetScoresWithUserID(databases, user.ID)
+
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+
+			if len(scores) == 0 {
+				fmt.Println(db.ErrNotScores)
+			}
+
+			mostrarScores(scores)
+
+			time.Sleep(time.Second * 3)
+
+			clearScreen()
 
 		case 0:
 			return
@@ -39,7 +63,7 @@ func ingresar(databases *sql.DB, user pokedatabases.User) (err error) {
 	return
 }
 
-func registrar(databases *sql.DB) (user *pokedatabases.User, err error) {
+func registrar(databases *sql.DB) (user *db.User, err error) {
 
 	var usernameScan, passwordScan string
 
@@ -48,35 +72,49 @@ func registrar(databases *sql.DB) (user *pokedatabases.User, err error) {
 	fmt.Println("Ingrese su password")
 	fmt.Scan(&passwordScan)
 
-	check, err := pokedatabases.CheckIfUserAlreadyExist(databases, usernameScan)
+	check, err := db.CheckIfUserAlreadyExist(databases, usernameScan)
 
 	if err != nil {
 		return
 	}
 
 	if check == true {
-		err = pokedatabases.ErrUserExist
+		err = db.ErrUserExist
 		return
 	}
 
-	err = pokedatabases.InsertUser(databases, usernameScan, passwordScan)
+	err = db.InsertUser(databases, usernameScan, passwordScan)
 	if err != nil {
 		return
 	}
 
-	user, err = pokedatabases.GetUser(databases, usernameScan, passwordScan)
+	user, err = db.GetUser(databases, usernameScan, passwordScan)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
 			if user == nil {
-				log.Fatal(errUsernamePasswordIncorrect)
+				err = errUsernamePasswordIncorrect
+				return
 			}
-			log.Fatal(err)
+			return
 		}
-		log.Fatal(err)
+		return
 	}
 
 	fmt.Println("nuevo usuario", usernameScan)
 
 	return
+}
+
+func mostrarScores(scores []db.Score) {
+
+	fmt.Println("N°\tScore\tDate")
+	fmt.Println()
+
+	for i := range scores {
+
+		fmt.Printf("%d.\t%v\t%v\n", i+1, scores[i].Score, scores[i].Date)
+
+	}
+
 }

@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE TABLE IF NOT EXISTS scores(
         id INTEGER PRIMARY KEY,
-        score TEXT NOT NULL
+        score TEXT NOT NULL,
+        date TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users_scores(
@@ -29,11 +30,11 @@ INSERT INTO users (username,password)
         ('cesar','cfabrica46'),
         ('arturo','01234');
 
-INSERT INTO scores (score) 
+INSERT INTO scores (score,date) 
     VALUES
-        (20),
-        (15),
-        (25);
+        (20,datetime('now')),
+        (15,datetime('now')),
+        (25,datetime('now'));
 
 INSERT INTO users_scores (user_id,score_id)
     VALUES

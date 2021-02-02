@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"math/rand"
@@ -8,9 +9,11 @@ import (
 	"os/exec"
 	"runtime"
 	"time"
+
+	"github.com/cfabrica46/snake/db"
 )
 
-func play() (err error) {
+func play(databases *sql.DB, user db.User) (err error) {
 	var nColumnas, nFilas, points, tiempo int
 
 	d := right
@@ -53,11 +56,28 @@ func play() (err error) {
 
 			generarFruit(nColumnas, xFruit, yFruit)
 
-			err := playerMove(d, nColumnas, nFilas, points, &xPlayer, &yPlayer, &xFruit, &yFruit)
+			err := playerMove(d, nColumnas, nFilas, &points, &xPlayer, &yPlayer, &xFruit, &yFruit)
 
 			if err != nil {
 				if err == errGameOver {
-					fmt.Println(err)
+
+					scores, err := db.GetScoresWithUserID(databases, user.ID)
+
+					if err != nil {
+						if err == db.ErrNotScores {
+
+						} else {
+							return err
+						}
+					}
+					check := checkBestScore(points, scores)
+
+					if check == true {
+						fmt.Println("CONGRATULATIONS YOU OBTAIN A NEW RENCORD!!!!")
+					}
+
+					err = db.InsertNewScore(databases, user.ID, points)
+
 					return err
 				}
 
@@ -171,7 +191,7 @@ func generarPlayer(nColumnas int) (x, y int) {
 	return
 }
 
-func playerMove(d direction, nColumnas, nFilas, points int, xPlayer, yPlayer, xFruit, yFruit *int) (err error) {
+func playerMove(d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) (err error) {
 
 	switch d {
 	case up:
@@ -254,13 +274,13 @@ func checkIFExistFruit(old, new fila) {
 
 }
 
-func reubication(n fila, nColumnas, nFilas, points int, xPlayer, yPlayer, xFruit, yFruit *int) {
+func reubication(n fila, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) {
 
 	if n[*xPlayer] != nil {
 
 		n[*xPlayer] = casilla{player[0]}
 
-		points++
+		*points++
 
 		*xFruit, *yFruit = ubicacionFruit(nColumnas, nFilas)
 
@@ -303,4 +323,16 @@ func convertElection(election string, d *direction) {
 		return
 	}
 
+}
+
+func checkBestScore(newScore int, scores []db.Score) (check bool) {
+
+	for i := range scores {
+		if scores[i].Score < newScore {
+			check = true
+			return
+		}
+	}
+
+	return
 }

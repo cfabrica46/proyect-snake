@@ -7,7 +7,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/cfabrica46/proyecto-pokemon/pokedatabases"
 	"github.com/cfabrica46/snake/db"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -68,7 +67,7 @@ func main() {
 		fmt.Println("Ingrese su password")
 		fmt.Scan(&passwordScan)
 
-		user, err := pokedatabases.GetUser(databases, usernameScan, passwordScan)
+		user, err := db.GetUser(databases, usernameScan, passwordScan)
 
 		if err != nil {
 			if err == sql.ErrNoRows && user == nil {
