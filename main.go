@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/cfabrica46/snake/db"
+	"github.com/cfabrica46/proyect-snake/db"
 
 	_ "github.com/mattn/go-sqlite3"
 )

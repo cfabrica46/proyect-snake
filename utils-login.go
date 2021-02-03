@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cfabrica46/snake/db"
+	"github.com/cfabrica46/proyect-snake/db"
 )
 
 func ingresar(databases *sql.DB, user db.User) (err error) {

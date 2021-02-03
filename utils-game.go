@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/cfabrica46/snake/db"
+	"github.com/cfabrica46/proyect-snake/db"
 )
 
 func play(databases *sql.DB, user db.User) (err error) {
