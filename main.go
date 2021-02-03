@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/cfabrica46/proyect-snake/db"
+	"github.com/cfabrica46/proyect-snake/databases"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -43,13 +43,13 @@ func main() {
 
 	var ingreso, usernameScan, passwordScan string
 
-	databases, err := db.Open()
+	db, err := databases.Open()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer databases.Close()
+	defer db.Close()
 
 	fmt.Println("Bienvenido")
 
@@ -67,7 +67,7 @@ func main() {
 		fmt.Println("Ingrese su password")
 		fmt.Scan(&passwordScan)
 
-		user, err := db.GetUser(databases, usernameScan, passwordScan)
+		user, err := databases.GetUser(db, usernameScan, passwordScan)
 
 		if err != nil {
 			if err == sql.ErrNoRows && user == nil {
@@ -76,20 +76,20 @@ func main() {
 			log.Fatal(err)
 		}
 
-		err = ingresar(databases, *user)
+		err = ingresar(db, *user)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
 	case "r":
-		user, err := registrar(databases)
+		user, err := registrar(db)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		err = ingresar(databases, *user)
+		err = ingresar(db, *user)
 
 		if err != nil {
 			log.Fatal(err)

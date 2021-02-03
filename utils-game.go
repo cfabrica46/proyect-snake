@@ -10,10 +10,10 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/cfabrica46/proyect-snake/db"
+	"github.com/cfabrica46/proyect-snake/databases"
 )
 
-func play(databases *sql.DB, user db.User) (err error) {
+func play(db *sql.DB, user databases.User) (err error) {
 	var nColumnas, nFilas, points, tiempo int
 
 	d := right
@@ -61,10 +61,10 @@ func play(databases *sql.DB, user db.User) (err error) {
 			if err != nil {
 				if err == errGameOver {
 
-					scores, err := db.GetScoresWithUserID(databases, user.ID)
+					scores, err := databases.GetScoresWithUserID(db, user.ID)
 
 					if err != nil {
-						if err == db.ErrNotScores {
+						if err == databases.ErrNotScores {
 
 						} else {
 							return err
@@ -76,7 +76,7 @@ func play(databases *sql.DB, user db.User) (err error) {
 						fmt.Println("CONGRATULATIONS YOU OBTAIN A NEW RENCORD!!!!")
 					}
 
-					err = db.InsertNewScore(databases, user.ID, points)
+					err = databases.InsertNewScore(db, user.ID, points)
 
 					return err
 				}
@@ -325,7 +325,7 @@ func convertElection(election string, d *direction) {
 
 }
 
-func checkBestScore(newScore int, scores []db.Score) (check bool) {
+func checkBestScore(newScore int, scores []databases.Score) (check bool) {
 
 	for i := range scores {
 		if scores[i].Score < newScore {

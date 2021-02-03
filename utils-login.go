@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cfabrica46/proyect-snake/db"
+	"github.com/cfabrica46/proyect-snake/databases"
 )
 
-func ingresar(databases *sql.DB, user db.User) (err error) {
+func ingresar(db *sql.DB, user databases.User) (err error) {
 
 	var eleccionMenu int
 	var salir bool
@@ -28,7 +28,7 @@ func ingresar(databases *sql.DB, user db.User) (err error) {
 		switch eleccionMenu {
 		case 1:
 			clearScreen()
-			err := play(databases, user)
+			err := play(db, user)
 
 			if err != nil {
 				fmt.Println(err.Error())
@@ -38,14 +38,14 @@ func ingresar(databases *sql.DB, user db.User) (err error) {
 
 		case 2:
 			clearScreen()
-			scores, err := db.GetScoresWithUserID(databases, user.ID)
+			scores, err := databases.GetScoresWithUserID(db, user.ID)
 
 			if err != nil {
 				fmt.Println(err.Error())
 			}
 
 			if len(scores) == 0 {
-				fmt.Println(db.ErrNotScores)
+				fmt.Println(databases.ErrNotScores)
 			}
 
 			mostrarScores(scores)
@@ -63,7 +63,7 @@ func ingresar(databases *sql.DB, user db.User) (err error) {
 	return
 }
 
-func registrar(databases *sql.DB) (user *db.User, err error) {
+func registrar(db *sql.DB) (user *databases.User, err error) {
 
 	var usernameScan, passwordScan string
 
@@ -72,23 +72,23 @@ func registrar(databases *sql.DB) (user *db.User, err error) {
 	fmt.Println("Ingrese su password")
 	fmt.Scan(&passwordScan)
 
-	check, err := db.CheckIfUserAlreadyExist(databases, usernameScan)
+	check, err := databases.CheckIfUserAlreadyExist(db, usernameScan)
 
 	if err != nil {
 		return
 	}
 
 	if check == true {
-		err = db.ErrUserExist
+		err = databases.ErrUserExist
 		return
 	}
 
-	err = db.InsertUser(databases, usernameScan, passwordScan)
+	err = databases.InsertUser(db, usernameScan, passwordScan)
 	if err != nil {
 		return
 	}
 
-	user, err = db.GetUser(databases, usernameScan, passwordScan)
+	user, err = databases.GetUser(db, usernameScan, passwordScan)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -106,7 +106,7 @@ func registrar(databases *sql.DB) (user *db.User, err error) {
 	return
 }
 
-func mostrarScores(scores []db.Score) {
+func mostrarScores(scores []databases.Score) {
 
 	fmt.Println("N°\tScore\tDate")
 	fmt.Println()
