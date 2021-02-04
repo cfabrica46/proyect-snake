@@ -1,27 +1,21 @@
 package main
 
-import "fmt"
-
-type casilla []string
-type fila []casilla
-type arena []fila
+import (
+	"fmt"
+)
 
 func main() {
 
-	var c casilla
-	var f fila
-	var a arena
+	var matriz [][]rune
+
+	slice := make([]rune, 10)
 
 	for i := 0; i < 10; i++ {
-		f = append(f, c)
+
+		matriz = append(matriz, slice)
 	}
 
-	for i := 0; i < 10; i++ {
-		a = append(a, f)
+	for i := range matriz {
+		fmt.Println(matriz[i])
 	}
-
-	for i := range a {
-		fmt.Println(a[i])
-	}
-
 }

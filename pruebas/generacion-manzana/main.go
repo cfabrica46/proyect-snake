@@ -9,33 +9,25 @@ import (
 	"time"
 )
 
-type casilla []string
-type fila []casilla
-type arena []fila
-
 var (
-	fruta  = []string{"☼"}
-	player = []string{"☻"}
+	fruta  = "☼"
+	player = "☻"
 )
-
-var a arena
-
-var points, tiempo int
 
 func main() {
 
-	var nColumnas, nFilas int
+	var nColumnas, points, tiempo, nFilas int
 
 	nColumnas = 10
 	nFilas = 10
 
-	a = generarArena(nColumnas, nFilas)
+	a := generarArena(nColumnas, nFilas)
 
 	tick := time.Tick(time.Second * 1)
 
 	x, y := ubicacionFruta(nColumnas, nFilas)
 
-	generarFruta(nColumnas, x, y)
+	generarFruta(a, nColumnas, x, y)
 
 	c := make(chan bool)
 
@@ -52,7 +44,7 @@ func main() {
 
 				x, y = ubicacionFruta(nColumnas, nFilas)
 
-				generarFruta(nColumnas, x, y)
+				generarFruta(a, nColumnas, x, y)
 
 				points++
 
@@ -61,7 +53,7 @@ func main() {
 			}
 			clearScreen()
 
-			mostrarArena()
+			mostrarArena(a, tiempo, points)
 
 			tiempo++
 
@@ -71,23 +63,19 @@ func main() {
 
 }
 
-func generarArena(nColumnas, nFilas int) (a arena) {
-	var f fila
-	var c casilla
+func generarArena(nColumnas, nFilas int) (matriz [][]string) {
+
+	slice := make([]string, nFilas)
 
 	for i := 0; i < nColumnas; i++ {
 
-		f = append(f, c)
-	}
-
-	for i := 0; i < nFilas; i++ {
-		a = append(a, f)
+		matriz = append(matriz, slice)
 	}
 
 	return
 }
 
-func mostrarArena() {
+func mostrarArena(a [][]string, tiempo, points int) {
 
 	fmt.Println()
 
@@ -101,7 +89,14 @@ func mostrarArena() {
 	fmt.Println()
 
 	for i := range a {
-		fmt.Println(a[i])
+		for index := range a[i] {
+			if a[i][index] == "" {
+				fmt.Print("■  ")
+			} else {
+				fmt.Printf("%s  ", a[i][index])
+			}
+		}
+		fmt.Println()
 	}
 }
 
@@ -116,9 +111,9 @@ func ubicacionFruta(nColumnas, nFilas int) (x, y int) {
 	return
 }
 
-func generarFruta(nColumnas, x, y int) {
+func generarFruta(a [][]string, nColumnas, x, y int) {
 
-	n := make(fila, nColumnas)
+	n := make([]string, nColumnas)
 
 	n[x] = fruta
 

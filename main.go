@@ -12,10 +12,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type casilla []string
-type fila []casilla
-type arena []fila
-
 type direction int
 
 const (
@@ -26,18 +22,13 @@ const (
 )
 
 var (
-	fruit  = []string{"☼"}
-	player = []string{"☺"}
+	fruit  = "☼"
+	player = "☺"
 )
 
 var (
-	errGameOver                  = errors.New("GAME OVER")
 	errUsernamePasswordIncorrect = errors.New("Username y/o Password incorrectos")
 )
-
-var a arena
-
-var points, tiempo int
 
 func main() {
 

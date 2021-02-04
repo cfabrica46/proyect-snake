@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -21,17 +20,17 @@ func play(db *sql.DB, user databases.User) (err error) {
 	nColumnas = 10
 	nFilas = 10
 
-	a = generarArena(nColumnas, nFilas)
+	a := generarArena(nColumnas, nFilas)
 
-	xPlayer, yPlayer := generarPlayer(nColumnas)
+	xPlayer, yPlayer := generarPlayer(a, nColumnas)
 
 	xFruit, yFruit := ubicacionFruit(nColumnas, nFilas)
 
-	generarFruit(nColumnas, xFruit, yFruit)
+	generarFruit(a, nColumnas, xFruit, yFruit)
 
 	clearScreen()
 
-	mostrarArena(tiempo, points)
+	mostrarArena(a, tiempo, points)
 
 	tick := time.Tick(time.Second * 1)
 
@@ -54,39 +53,37 @@ func play(db *sql.DB, user databases.User) (err error) {
 
 			a = generarArena(nColumnas, nFilas)
 
-			generarFruit(nColumnas, xFruit, yFruit)
+			generarFruit(a, nColumnas, xFruit, yFruit)
 
-			err := playerMove(d, nColumnas, nFilas, &points, &xPlayer, &yPlayer, &xFruit, &yFruit)
+			die := playerMove(a, d, nColumnas, nFilas, &points, &xPlayer, &yPlayer, &xFruit, &yFruit)
 
-			if err != nil {
-				if err == errGameOver {
+			if die == true {
 
-					scores, err := databases.GetScoresWithUserID(db, user.ID)
+				fmt.Println("GAME OVER!!!")
 
-					if err != nil {
-						if err == databases.ErrNotScores {
+				scores, err := databases.GetScoresWithUserID(db, user.ID)
 
-						} else {
-							return err
-						}
+				if err != nil {
+					if err == databases.ErrNotScores {
+
+					} else {
+						return err
 					}
-					check := checkBestScore(points, scores)
+				}
+				check := checkBestScore(points, scores)
 
-					if check == true {
-						fmt.Println("CONGRATULATIONS YOU OBTAIN A NEW RENCORD!!!!")
-					}
-
-					err = databases.InsertNewScore(db, user.ID, points)
-
-					return err
+				if check == true {
+					fmt.Println("CONGRATULATIONS YOU OBTAIN A NEW RENCORD!!!!")
 				}
 
-				log.Fatal(err)
+				err = databases.InsertNewScore(db, user.ID, points)
+
+				return err
 			}
 
 			clearScreen()
 
-			mostrarArena(tiempo, points)
+			mostrarArena(a, tiempo, points)
 
 			tiempo++
 
@@ -95,23 +92,19 @@ func play(db *sql.DB, user databases.User) (err error) {
 	}
 }
 
-func generarArena(nColumnas, nFilas int) (a arena) {
-	var f fila
-	var c casilla
+func generarArena(nColumnas, nFilas int) (matriz [][]string) {
+
+	slice := make([]string, nFilas)
 
 	for i := 0; i < nColumnas; i++ {
 
-		f = append(f, c)
-	}
-
-	for i := 0; i < nFilas; i++ {
-		a = append(a, f)
+		matriz = append(matriz, slice)
 	}
 
 	return
 }
 
-func mostrarArena(tiempo, points int) {
+func mostrarArena(a [][]string, tiempo, points int) {
 
 	fmt.Println()
 
@@ -126,10 +119,10 @@ func mostrarArena(tiempo, points int) {
 
 	for i := range a {
 		for index := range a[i] {
-			if a[i][index] == nil {
+			if a[i][index] == "" {
 				fmt.Print("■  ")
 			} else {
-				fmt.Printf("%v  ", a[i][index][0])
+				fmt.Printf("%s  ", a[i][index])
 			}
 		}
 		fmt.Println()
@@ -167,9 +160,9 @@ func ubicacionFruit(nColumnas, nFilas int) (x, y int) {
 	return
 }
 
-func generarFruit(nColumnas, x, y int) {
+func generarFruit(a [][]string, nColumnas, x, y int) {
 
-	n := make(fila, nColumnas)
+	n := make([]string, nColumnas)
 
 	n[x] = fruit
 
@@ -177,12 +170,12 @@ func generarFruit(nColumnas, x, y int) {
 
 }
 
-func generarPlayer(nColumnas int) (x, y int) {
+func generarPlayer(a [][]string, nColumnas int) (x, y int) {
 
 	x = 0
 	y = 0
 
-	n := make(fila, nColumnas)
+	n := make([]string, nColumnas)
 
 	n[x] = player
 
@@ -191,16 +184,16 @@ func generarPlayer(nColumnas int) (x, y int) {
 	return
 }
 
-func playerMove(d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) (err error) {
+func playerMove(a [][]string, d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) (die bool) {
 
 	switch d {
 	case up:
 
-		n := make(fila, nColumnas)
+		n := make([]string, nColumnas)
 
 		if *yPlayer-1 < 0 {
 
-			err = errGameOver
+			die = true
 			return
 		}
 
@@ -208,15 +201,15 @@ func playerMove(d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xF
 
 		checkIFExistFruit(a[*yPlayer], n)
 
-		reubication(n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
+		reubication(a, n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
 
 	case right:
 
-		n := make(fila, nColumnas)
+		n := make([]string, nColumnas)
 
 		if *xPlayer+1 >= len(n) {
 
-			err = errGameOver
+			die = true
 			return
 		}
 
@@ -224,15 +217,15 @@ func playerMove(d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xF
 
 		checkIFExistFruit(a[*yPlayer], n)
 
-		reubication(n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
+		reubication(a, n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
 
 	case left:
 
-		n := make(fila, nColumnas)
+		n := make([]string, nColumnas)
 
 		if *xPlayer-1 < 0 {
 
-			err = errGameOver
+			die = true
 			return
 		}
 
@@ -240,15 +233,15 @@ func playerMove(d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xF
 
 		checkIFExistFruit(a[*yPlayer], n)
 
-		reubication(n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
+		reubication(a, n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
 
 	case down:
 
-		n := make(fila, nColumnas)
+		n := make([]string, nColumnas)
 
 		if *yPlayer+1 >= len(n) {
 
-			err = errGameOver
+			die = true
 			return
 		}
 
@@ -256,17 +249,17 @@ func playerMove(d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xF
 
 		checkIFExistFruit(a[*yPlayer], n)
 
-		reubication(n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
+		reubication(a, n, nColumnas, nFilas, points, xPlayer, yPlayer, xFruit, yFruit)
 
 	}
 
 	return
 }
 
-func checkIFExistFruit(old, new fila) {
+func checkIFExistFruit(old, new []string) {
 
 	for i := range old {
-		if old[i] != nil {
+		if old[i] != "" {
 			new[i] = fruit
 			return
 		}
@@ -274,11 +267,11 @@ func checkIFExistFruit(old, new fila) {
 
 }
 
-func reubication(n fila, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) {
+func reubication(a [][]string, n []string, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) {
 
-	if n[*xPlayer] != nil {
+	if n[*xPlayer] != "" {
 
-		n[*xPlayer] = casilla{player[0]}
+		n[*xPlayer] = player
 
 		*points++
 
