@@ -22,8 +22,8 @@ const (
 )
 
 var (
-	fruit  = "☼"
-	player = "☺"
+	fruit  = rune(9788)
+	player = rune(9786)
 )
 
 var (

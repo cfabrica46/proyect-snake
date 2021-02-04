@@ -34,8 +34,6 @@ func ingresar(db *sql.DB, user databases.User) (err error) {
 				fmt.Println(err.Error())
 			}
 
-			fmt.Println("GAME OVER!!!")
-
 		case 2:
 			clearScreen()
 			scores, err := databases.GetScoresWithUserID(db, user.ID)

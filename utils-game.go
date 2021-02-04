@@ -92,9 +92,9 @@ func play(db *sql.DB, user databases.User) (err error) {
 	}
 }
 
-func generarArena(nColumnas, nFilas int) (matriz [][]string) {
+func generarArena(nColumnas, nFilas int) (matriz [][]rune) {
 
-	slice := make([]string, nFilas)
+	slice := make([]rune, nFilas)
 
 	for i := 0; i < nColumnas; i++ {
 
@@ -104,7 +104,7 @@ func generarArena(nColumnas, nFilas int) (matriz [][]string) {
 	return
 }
 
-func mostrarArena(a [][]string, tiempo, points int) {
+func mostrarArena(a [][]rune, tiempo, points int) {
 
 	fmt.Println()
 
@@ -119,10 +119,11 @@ func mostrarArena(a [][]string, tiempo, points int) {
 
 	for i := range a {
 		for index := range a[i] {
-			if a[i][index] == "" {
+			if a[i][index] == 0 {
 				fmt.Print("■  ")
 			} else {
-				fmt.Printf("%s  ", a[i][index])
+
+				fmt.Printf("%v  ", string(a[i][index]))
 			}
 		}
 		fmt.Println()
@@ -160,9 +161,9 @@ func ubicacionFruit(nColumnas, nFilas int) (x, y int) {
 	return
 }
 
-func generarFruit(a [][]string, nColumnas, x, y int) {
+func generarFruit(a [][]rune, nColumnas, x, y int) {
 
-	n := make([]string, nColumnas)
+	n := make([]rune, nColumnas)
 
 	n[x] = fruit
 
@@ -170,12 +171,12 @@ func generarFruit(a [][]string, nColumnas, x, y int) {
 
 }
 
-func generarPlayer(a [][]string, nColumnas int) (x, y int) {
+func generarPlayer(a [][]rune, nColumnas int) (x, y int) {
 
 	x = 0
 	y = 0
 
-	n := make([]string, nColumnas)
+	n := make([]rune, nColumnas)
 
 	n[x] = player
 
@@ -184,12 +185,12 @@ func generarPlayer(a [][]string, nColumnas int) (x, y int) {
 	return
 }
 
-func playerMove(a [][]string, d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) (die bool) {
+func playerMove(a [][]rune, d direction, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) (die bool) {
 
 	switch d {
 	case up:
 
-		n := make([]string, nColumnas)
+		n := make([]rune, nColumnas)
 
 		if *yPlayer-1 < 0 {
 
@@ -205,7 +206,7 @@ func playerMove(a [][]string, d direction, nColumnas, nFilas int, points, xPlaye
 
 	case right:
 
-		n := make([]string, nColumnas)
+		n := make([]rune, nColumnas)
 
 		if *xPlayer+1 >= len(n) {
 
@@ -221,7 +222,7 @@ func playerMove(a [][]string, d direction, nColumnas, nFilas int, points, xPlaye
 
 	case left:
 
-		n := make([]string, nColumnas)
+		n := make([]rune, nColumnas)
 
 		if *xPlayer-1 < 0 {
 
@@ -237,7 +238,7 @@ func playerMove(a [][]string, d direction, nColumnas, nFilas int, points, xPlaye
 
 	case down:
 
-		n := make([]string, nColumnas)
+		n := make([]rune, nColumnas)
 
 		if *yPlayer+1 >= len(n) {
 
@@ -256,10 +257,10 @@ func playerMove(a [][]string, d direction, nColumnas, nFilas int, points, xPlaye
 	return
 }
 
-func checkIFExistFruit(old, new []string) {
+func checkIFExistFruit(old, new []rune) {
 
 	for i := range old {
-		if old[i] != "" {
+		if old[i] != 0 {
 			new[i] = fruit
 			return
 		}
@@ -267,9 +268,9 @@ func checkIFExistFruit(old, new []string) {
 
 }
 
-func reubication(a [][]string, n []string, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) {
+func reubication(a [][]rune, n []rune, nColumnas, nFilas int, points, xPlayer, yPlayer, xFruit, yFruit *int) {
 
-	if n[*xPlayer] != "" {
+	if n[*xPlayer] != 0 {
 
 		n[*xPlayer] = player
 
